@@ -60,7 +60,7 @@ async def get_seller_details(page: Page) -> Dict[str, Optional[str]]:
     result = {
         "name": None,
         "since": None,
-        "type": "private",
+        "type": "business",
         "badges": []
     }
 
@@ -73,7 +73,7 @@ async def get_seller_details(page: Page) -> Dict[str, Optional[str]]:
         type_selector = ".userprofile-vip-details-text:has-text('Privater Nutzer'), .userprofile-vip-details-text:has-text('Gewerblicher Nutzer')"
         seller_type = await get_element_content(page, type_selector)
         if seller_type:
-            result["type"] = "business" if "Gewerblicher" in seller_type else "private"
+            result["type"] = "private" if "Privater" in seller_type else "business"
 
         # Get since date
         since_selector = ".userprofile-vip-details-text:has-text('Aktiv seit')"
