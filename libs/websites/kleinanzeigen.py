@@ -16,11 +16,25 @@ async def get_elements_content(page: Page, selector: str) -> List[str]:
 
 async def get_image_sources(page: Page, selector: str) -> List[str]:
     images: List[str] = []
-    image_element: Optional[ElementHandle] = await page.query_selector(selector)
-    if image_element:
-        src: Optional[str] = await image_element.get_attribute("src")
-        if src:
-            images.append(src)
+
+    # Try to get all images from the gallery first
+    gallery_images: List[ElementHandle] = await page.query_selector_all(".galleryimage-element img")
+    if gallery_images:
+        for img_element in gallery_images:
+            src: Optional[str] = await img_element.get_attribute("src")
+            if src:
+                # Replace thumbnail size with full size image
+                full_size_src = src.replace("?rule=$_59.AUTO", "?rule=$_57.JPG")
+                images.append(full_size_src)
+
+    # Fallback to original selector if no gallery images found
+    if not images:
+        image_element: Optional[ElementHandle] = await page.query_selector(selector)
+        if image_element:
+            src: Optional[str] = await image_element.get_attribute("src")
+            if src:
+                images.append(src)
+
     return images
 
 
